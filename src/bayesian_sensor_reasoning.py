@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Problem 4.1: Bayesian Sensor Reasoning calculator.
+"""Problem 4.2: Bayesian Sensor Reasoning calculator.
 
 This script computes all requested posterior probabilities for:
 1) No creaking observed (single-square assumption)
@@ -123,7 +123,7 @@ def print_multi_square_result(result: dict[str, float]) -> None:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Bayesian sensor reasoning for Problem 4.1")
+    parser = argparse.ArgumentParser(description="Bayesian sensor reasoning for Problem 4.2")
     parser.add_argument("--prior", type=float, default=0.15, help="Prior probability of damage")
     parser.add_argument("--tp", type=float, default=0.85, help="True-positive rate of base sensor")
     parser.add_argument("--fp", type=float, default=0.08, help="False-positive rate of base sensor")
@@ -138,7 +138,7 @@ def main() -> None:
     sensor_base = SensorModel(true_positive=args.tp, false_positive=args.fp)
     sensor_new = SensorModel(true_positive=args.tp2, false_positive=args.fp2)
 
-    print("Problem 4.1 Bayesian Sensor Reasoning")
+    print("Problem 4.2 Bayesian Sensor Reasoning")
     print("=" * 40)
 
     part1 = posterior_single_square(args.prior, sensor_base, observed_creak=False)
@@ -147,11 +147,22 @@ def main() -> None:
     part2 = posterior_single_square(args.prior, sensor_base, observed_creak=True)
     print_single_square_result("Part 2 - Base sensor, creaking observed", part2, observed_creak=True)
 
+    weighted_check = part1["posterior"] * part1["evidence"] + part2["posterior"] * part2["evidence"]
+    print("\nConsistency check")
+    print("-----------------")
+    print(f"P(D=1|C=0)P(C=0) + P(D=1|C=1)P(C=1) = {fmt(weighted_check)}")
+    print(f"Prior P(D=1): {fmt(args.prior)}")
+
     part3a = posterior_single_square(args.prior, sensor_new, observed_creak=False)
     print_single_square_result("Part 3A - New sensor, no creaking", part3a, observed_creak=False)
 
     part3b = posterior_single_square(args.prior, sensor_new, observed_creak=True)
     print_single_square_result("Part 3B - New sensor, creaking observed", part3b, observed_creak=True)
+
+    print("\nPart 3 comparison summary")
+    print("-------------------------")
+    print(f"Old sensor  P(D=1|C=0): {fmt(part1['posterior'])}, P(D=1|C=1): {fmt(part2['posterior'])}")
+    print(f"New sensor  P(D=1|C=0): {fmt(part3a['posterior'])}, P(D=1|C=1): {fmt(part3b['posterior'])}")
 
     part4 = posterior_multi_adjacent_d1_given_no_creak(args.prior, sensor_base)
     print_multi_square_result(part4)

@@ -22,7 +22,7 @@ Run it with:
 python src/main.py
 ```
 
-## Problem 4.1 Script
+## Problem 4.2 Script
 
 To run the Bayesian sensor reasoning program:
 
